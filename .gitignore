@@ -1,0 +1,13 @@
+# .NET
+bin/
+obj/
+*.user
+# Python
+.venv/
+__pycache__/
+*.pyc
+# macOS
+.DS_Store
+# generated CAD / build outputs are reproducible from phone/tools; keep the small ones only
+phone/build/*.stl
+phone/build/*.step

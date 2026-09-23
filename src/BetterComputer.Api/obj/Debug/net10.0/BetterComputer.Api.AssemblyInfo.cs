@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BetterComputer.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+05a6920d1473292f1ba865a5154fd3a9c1ce2c01")]
 [assembly: System.Reflection.AssemblyProductAttribute("BetterComputer.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BetterComputer.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
