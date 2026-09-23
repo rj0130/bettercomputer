@@ -1,20 +1,57 @@
 # State
 
-**Updated:** 2026-09-23 (end of run 5)
+**Updated:** 2026-09-23 (run 6, parked mid-unit on Rae's wrap-up instruction)
 **Branch:** main
 **Cold start:** follow the numbered block at the top of `CLAUDE.md`.
 
 ## Current position
 
-**P3 (Module architecture) is now fully gated end to end.** `phone/spec/modules/` holds all eight
-v1 module-class YAMLs (MOD-002); `validate_modules.py` (U5) validates and fit-checks each one; and
-`power_budget.py`, `bom_rollup.py`, `repairability.py`, `report.py` (U6) consume that same data to
-produce the first `phone/build/*.md` reports — `phone/build/fit.md`, `phone/build/power-budget.md`,
-`phone/build/bom.md`, `phone/build/repairability.md`, and an index `phone/build/report.md` that
-states the P3 gate condition
-(design-path.md: "report.py produces fit, mass, power, cost and repairability reports with zero
-failures; tests pass"). That gate passes: 0 script failures, 76/76 tests. **The next unit is
-U7** (CAD) — see `project/plan.md`.
+**P3 (Module architecture) is fully gated end to end** (unchanged from run 5 — see the U1-U6 row
+in the table below). **U7 (P4, CAD) is IN PROGRESS, parked mid-unit, not done:**
+`phone/hardware/cad/modules.py` and `phone/hardware/cad/frame.py` exist and are verified; nothing
+else in U7's row is written yet. Concretely:
+- `phone/hardware/cad/modules.py`: a hand-authored 3D floorplan (`LAYOUT`, D-021) placing all
+  seven bay-mapped modules' raw boxes inside the envelope, plus `check_collisions()` — pure
+  stdlib, no cadquery import at module load, so it runs and is testable under plain `python3`.
+  Verified by hand (see D-021): zero collisions among the seven raw module volumes, except the
+  one documented exception (`display`/`sensor-front`, a real front-camera notch cut into the
+  display panel). Run it: `python3 phone/hardware/cad/modules.py`.
+- `phone/hardware/cad/frame.py`: builds the structural shell (perimeter ring + backbone board +
+  back cover, each with cutouts, D-021's constants) with CadQuery and computes its real
+  volume/mass — needs the `.venv/` CadQuery environment. First real run: **14,348.6mm³**
+  structure volume (under `phone/spec/device.yaml`'s 15,796.4mm³ placeholder budget), **17.22g**
+  mass at a flagged 1.2g/cm³ placeholder density. Run it:
+  `.venv/bin/python3.11 phone/hardware/cad/frame.py`.
+- Not yet done, in this order: an SVG exploded-view script, the gen_cad.py driver (revalidates
+  the spec, runs the collision check, exports STEP/STL to phone/build/, calls the exploded-view
+  script, writes a phone/build/cad-report.md stating the P4 gate), then the
+  phone/hardware/fasteners-and-tolerances.md doc (fastener choice already fixed by D-004 — Torx
+  T5, zero adhesive except display lamination — this doc needs the assembly order and the
+  tolerance findings below written up), then a phone/tests/test_cad.py (test
+  `phone/hardware/cad/modules.py`'s layout/collision logic and the exploded-view script's SVG
+  generation under plain `python3`; do **not** import `phone/hardware/cad/frame.py` or the
+  gen_cad.py driver from the standard test runner — they need cadquery, which system `python3`
+  doesn't have; verify those two manually via `.venv/bin/python3.11`). All four of these files
+  are named in `project/plan.md`'s U7 row but do not exist yet — do not trust any backtick
+  reference to them until they're written.
+- Two real findings from this first CAD pass, worth writing into the fasteners doc and possibly
+  a new decision, not hidden: (1) with `clearance_mm=0.3` per bay, the display's and radio's
+  clearance envelopes overlap by up to 0.6mm right at the z=2.6mm boundary between the front
+  layer and the mid-cavity (their *raw* volumes don't touch) — no reserved standoff exists there
+  yet; (2) `phone/hardware/cad/frame.py` does not model ribs between bays at all, only the outer
+  ring + backbone + cover, so the real per-bay wall thickness between neighbors is currently zero
+  material (an open item for a frame.py refinement or P9/U12 DFM, not a blocker for U7's own "no
+  bay collision" acceptance, which is about module-to-module volumes).
+- Not yet done: propagating `phone/hardware/cad/frame.py`'s real 14,348.6mm³/17.22g into
+  `phone/spec/modules/frame.yaml`'s `footprint` block (replacing its `null` placeholders) and
+  into `phone/spec/device.yaml`'s `structure`/`totals` blocks (replacing the 15,796.4mm³
+  hand-guess with the CAD figure), then re-running `validate_spec.py`, `validate_modules.py`,
+  `bom_rollup.py`, `repairability.py`, `report.py` to confirm the whole P3 pipeline still passes
+  with real numbers instead of placeholders. This is what finally closes the `null` frame mass
+  `bom_rollup.py` has been excluding since U5/U6.
+- Resume U7 by picking up exactly here: write the exploded-view script, then the gen_cad.py
+  driver, then the fasteners doc, then the CAD test file, then the spec-file propagation above,
+  then re-run the full report pipeline, then close out U7 in `project/plan.md`/this file.
 
 | Unit | What | Status |
 |---|---|---|
@@ -24,7 +61,8 @@ U7** (CAD) — see `project/plan.md`.
 | U4 | specload.py, validate_spec.py, fit_check.py, tests | done |
 | U5 | Eight module spec YAMLs, validate_modules.py, tests | done |
 | U6 | power_budget.py, bom_rollup.py, repairability.py, report.py, phone/build/*.md, tests | done |
-| U7–U15 | CAD, electrical, software, thermal, research, DFM, cost, platform, build plan | pending; see `project/plan.md`; **U7 next** |
+| U7 | CAD: frame.py, modules.py, exploded.py, gen_cad.py, fasteners doc | **in progress** — modules.py + frame.py done and verified, rest pending (see above) |
+| U8–U15 | electrical, software, thermal, research, DFM, cost, platform, build plan | pending; see `project/plan.md` |
 
 ## What is true right now
 
@@ -115,13 +153,15 @@ U7** (CAD) — see `project/plan.md`.
 
 ## Next
 
-1. **U7** (P4, mechanical): the CadQuery frame generator, module dummies, exploded-view SVG and
-   driver script named in `project/plan.md`'s U7 row (not yet written — see that file), producing
-   STEP/STL/SVG exports plus a fasteners-and-tolerances doc. Needs the `.venv/` CadQuery
-   environment (already installed on this host, see below). This is what finally derives the
+1. **Finish U7** (P4, mechanical), parked mid-unit this run — see "Current position" above for
+   the exact resume point: exploded-view script → gen_cad.py driver → the fasteners-and-
+   tolerances doc → a CAD test file → propagate `phone/hardware/cad/frame.py`'s real
+   14,348.6mm³/17.22g into `phone/spec/modules/frame.yaml` and `phone/spec/device.yaml`'s
+   structure/totals blocks → re-run the
+   full P3 report pipeline → close out U7 in `project/plan.md`. This is what finally derives the
    frame's own real volume and mass — every place that currently reads
    `phone/spec/modules/frame.yaml`'s `null` footprint/mass and `repairability.py`'s
-   "fasteners unknown" flag should be revisited once U7 lands real geometry.
+   "fasteners unknown" flag should be revisited once that propagation lands.
 2. U8 (P5, electrical) can start in parallel once U7 or independently of it — it's what actually
    sets rail budgets, which is the missing piece `phone/tools/power_budget.py` (U6) explicitly
    flagged rather than gated on. It also owns resolving `phone/spec/modules/radio.yaml`'s
