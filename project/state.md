@@ -1,41 +1,49 @@
 # State
 
-**Updated:** 2026-09-22 (run 1)
+**Updated:** 2026-09-22 (end of run 1, before a model switch and `/clear`)
 **Branch:** main
-**Next session starts here:** read `CLAUDE.md`, then this file, then run `python3 phone/tools/check.py`.
+**Cold start:** follow the numbered block at the top of `CLAUDE.md`.
 
 ## Current position
 
-Run 1 turned the repo from a .NET service scaffold into a product-design repo. The product is
-**BC-1**, a modular repairable phone. Work proceeds in numbered units; each unit ends with a commit
-and a row below.
+Phase **P1 (Product definition & plan) is complete on paper**; nothing after it has started.
+Units U1 and U2 are done. **The next unit is U3**: the master spec (device.yaml) and the
+BC-Bus standard (bus.md) under phone/spec/, plus two ADRs; exact filenames are in the plan. `project/plan.md` is the authority on
+units; this table mirrors it.
 
 | Unit | What | Status |
 |---|---|---|
-| U1 | Cold-start scaffold: `CLAUDE.md`, `project/`, checker | done |
-| U2 | Master spec `phone/spec/device.yaml` + module YAMLs + bus spec | done |
-| U3 | Deterministic tools: validate, fit check, power budget, BOM roll-up, repairability, report | done |
-| U4 | Code-CAD: chassis frame with module bays, STEP/STL, exploded SVG | done |
-| U5 | Design docs: requirements, principles, industrial design, ergonomics | done |
-| U6 | Electrical architecture: power tree, block diagram, module identity | done |
-| U7 | Software stack: OS choice, module descriptors, update model | done |
-| U8 | Research with sources: SoC candidates, battery, regulation, display | done |
-| U9 | Platform hook: how BC-1 BOM and recipes feed `src/` services | done |
+| U1 | Cold-start scaffold, tracker, checker | done |
+| U2 | Planning corpus: roadmap, design path, README, principles, personas, requirements, decision points, risks, plan | done |
+| U3 | Master spec + bus standard + ADRs | **next** |
+| U4–U15 | Tools, modules, CAD, electrical, software, thermal, research, DFM, cost, platform, build plan | pending; see `project/plan.md` |
 
 ## What is true right now
 
-- `phone/tools/check.py` passes (run it to confirm; it is the authority, not this line).
-- The CadQuery venv at `.venv/` exists on this host only. It is not in git. Rebuild per `CLAUDE.md`.
-- The .NET scaffold in `src/` is untouched from the August commit except for `.gitignore`
-  dropping `obj/` and `bin/`.
-- Remote `origin` is `github.com/rj0130/bettercomputer`; nothing has been pushed by Claude.
+- `python3 phone/tools/check.py` passes at the end of run 1. Re-run it; it is the authority.
+- The CadQuery venv `.venv/` (Python 3.11, cadquery 2.8, build123d 0.13, pyyaml) is installed on
+  this host, not in git. Nothing uses it yet; U7 will.
+- `phone/spec/`, `phone/hardware/`, `phone/software/`, `phone/docs/research/`, `phone/build/` are
+  **empty directories**: the plan names the files that will live there; none exist yet. Do not
+  trust any path under them until U3+ creates it.
+- The team mailbox is at `/Users/raejeong/agentmail` (server on 127.0.0.1:7777, started with
+  nohup, not launchd: the launchd install was denied; Rae can install `/Users/raejeong/agentmail/com.rae.agentmail.plist`).
+  Peers registered: second-brain, termphone, consolegenie. Their intro messages are acked in
+  `data/mailboxes/bettercomputer/acked/` and worth one read: consolegenie offers a sanitizer;
+  second-brain answered which tools exist on this Mac; termphone is the sibling phone.
+- The .NET scaffold in `src/` is untouched except build artifacts leaving the index.
+- Remote `origin` is `github.com/rj0130/bettercomputer`; nothing pushed by Claude (Q4).
 
 ## Next
 
-1. Rae reviews `project/open-questions.md` (defaults execute past decide-by dates).
-2. Next run: U10 thermal model (SoC TDP vs chassis surface), U11 antenna keep-outs in the CAD,
-   U12 module EEPROM descriptor schema as JSON Schema + signing design.
+1. U3. Envelope from PRD-004, bays from MOD-002, lane allocation per BUS-002, rails, ceilings
+   from PRD-003. Keep it small enough for the stdlib loader U4 will write (flat maps, lists, no
+   anchors).
+2. U11 (research) can run in parallel with U3–U6 and should replace the [UNVERIFIED] flags in
+   `phone/design/requirements.md` and `decision-points.md`.
+3. Open questions Q1–Q5 in `project/open-questions.md` carry defaults; nothing waits on Rae.
 
 ## Absent files (work in flight)
 
-None. Every path referenced in this file and in `CLAUDE.md` exists; `check.py` enforces it.
+None in flight. Every path in this file and `CLAUDE.md` exists; `check.py` enforces it. The
+files listed against pending units in `project/plan.md` do not exist yet by design.
