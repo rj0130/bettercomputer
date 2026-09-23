@@ -62,7 +62,7 @@ bays:
     clearance_mm: 0.3
     zone: "upper-center, behind display, adjacent to camera-rear"
     connector: "BC-Bus host connector: carries every lane group and every rail"
-    lanes: ["DSI:4", "CSI:2", "USB3/PCIe:2", "I2C:1", "GPIO:1"]
+    lanes: ["DSI:4", "CSI:2", "USB3/PCIe:2"]
     rails: ["VBAT", "3V3", "1V8"]
     source: [MOD-003, BUS-001, DP-04]
 
@@ -102,7 +102,7 @@ bays:
     clearance_mm: 0.3
     zone: "bottom edge"
     connector: "BC-Bus board-to-board; the USB-C shell mounts to the frame, not to the bay board"
-    lanes: ["USB3:1"]
+    lanes: ["USB3/PCIe:1"]
     rails: ["VBUS", "3V3"]
     source: [MOD-002, PWR-003, BUS-002]
 

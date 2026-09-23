@@ -1,28 +1,39 @@
 # State
 
-**Updated:** 2026-09-22 (end of run 2)
+**Updated:** 2026-09-22 (end of run 3)
 **Branch:** main
 **Cold start:** follow the numbered block at the top of `CLAUDE.md`.
 
 ## Current position
 
-Phase **P2 (System architecture) is gated**: `phone/spec/device.yaml`, `phone/spec/bus.md`, and
-ADRs 001–002 exist and are hand-verified (bay volumes + structure ≤ envelope, 37.2% margin); the
-automated gate (validate_spec.py) does not exist until U4, so "gated" not "passed". **The next
-unit is U4**: the stdlib spec loader and validator, so U3's numbers get a real gate. `project/plan.md`
-is the authority on units; this table mirrors it.
+Phase **P2 (System architecture) now has an automated gate**: `validate_spec.py` (U4) parses
+`phone/spec/device.yaml` and re-derives every bay volume and the totals arithmetic instead of
+trusting the hand calc from run 2 — it currently passes with 0 failures. **The next unit is U5**:
+the eight per-module spec YAMLs under `phone/spec/modules/`, which is what actually gates P3 (P3
+needs module specs plus tools; U4 only supplied the tools). `project/plan.md` is the authority on
+units; this table mirrors it.
 
 | Unit | What | Status |
 |---|---|---|
 | U1 | Cold-start scaffold, tracker, checker | done |
 | U2 | Planning corpus: roadmap, design path, README, principles, personas, requirements, decision points, risks, plan | done |
 | U3 | Master spec + bus standard + ADRs | done |
-| U4 | specload.py, validate_spec.py, fit_check.py, tests | **next** |
-| U5–U15 | Modules, CAD, electrical, software, thermal, research, DFM, cost, platform, build plan | pending; see `project/plan.md` |
+| U4 | specload.py, validate_spec.py, fit_check.py, tests | done |
+| U5–U15 | Modules, CAD, electrical, software, thermal, research, DFM, cost, platform, build plan | pending; see `project/plan.md`; **U5 next** |
 
 ## What is true right now
 
-- `python3 phone/tools/check.py` passes at the end of run 2. Re-run it; it is the authority.
+- `python3 phone/tools/check.py` passes at the end of run 3. Re-run it; it is the authority.
+- `phone/tools/specload.py` (stdlib YAML-subset loader), `validate_spec.py` (schema + totals-
+  arithmetic gate) and `fit_check.py` (per-bay report, recomputes volume from dims rather than
+  trusting the declared figure) all exist and pass against `phone/spec/device.yaml`.
+  `python3 -m unittest discover -s phone/tests` passes (29 tests).
+- `validate_spec.py`'s first run against `phone/spec/device.yaml` found two real bugs from U3's hand-written
+  spec, not parser bugs: `port` bay's `lanes` referenced `USB3` where `phone/spec/bus.md` defines the lane
+  group id as `USB3/PCIe`; `compute` bay's `lanes` list wrongly included `I2C:1`/`GPIO:1`, which
+  `phone/spec/bus.md` defines as always-present pin groups, not per-bay high-speed-lane entries. Both fixed
+  in `phone/spec/device.yaml`, logged as D-016. The P2 gate numbers (66,934.0mm³ bay + 15,796.4mm³ structure
+  = 82,730.4mm³ used against 131,637.0mm³ envelope, 37.2% margin) are unchanged by this fix.
 - The CadQuery venv `.venv/` (Python 3.11, cadquery 2.8, build123d 0.13, pyyaml) is installed on
   this host, not in git. Nothing uses it yet; U7 will. Holding (D042) now lists it as shared
   tooling other portfolio repos may reuse.
@@ -50,15 +61,16 @@ is the authority on units; this table mirrors it.
 
 ## Next
 
-1. **U4**: phone/tools/specload.py (stdlib YAML subset loader), validate_spec.py,
-   fit_check.py, phone/tests/test_tools.py. This is what turns U3's hand-verified arithmetic
-   into a real, re-runnable gate.
-2. U11 (research) can run in parallel with U4–U6 and should replace the `[UNVERIFIED]` flags this
+1. **U5**: `phone/spec/modules/{compute,display,battery,camera-rear,sensor-front,port,radio,frame}.yaml`,
+   one per v1 module class. `validate_spec.py` and `fit_check.py` exist now (U4) but only look at
+   `phone/spec/device.yaml`'s bays; whether they need extending to also load and cross-check the module
+   files, or whether module specs get their own thin validator, is a U5 call.
+2. U11 (research) can run in parallel with U5–U6 and should replace the `[UNVERIFIED]` flags this
    run added: battery bay footprint (DP-06), connector family (DP-03), structure volume fraction.
 3. Open questions Q1–Q5 in `project/open-questions.md` carry defaults; nothing waits on Rae.
 4. Holding's requests to this repo (COMPANY.md, platform confirmation, shared research folder,
    D-007..D-009 dangling-reference housekeeping) are unactioned; pick up next run or hand to a
-   parallel session — they don't block U4.
+   parallel session — they don't block U5.
 
 ## Absent files (work in flight)
 
