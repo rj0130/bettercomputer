@@ -14,7 +14,7 @@ asking what the product is, what its parts are, why each decision was made, or w
 | Phase | Name | Question it answers | Gate artifacts | Status |
 |---|---|---|---|---|
 | P1 | Product definition & plan | What is BC-1, for whom, and in what order do we design it? | `phone/README.md`, `phone/design/principles.md`, `personas-and-jobs.md`, `requirements.md`, `design-path.md`, `decision-points.md`, `risk-register.md`, `project/plan.md` | active |
-| P2 | System architecture | What are the bays, the bus, the rails, the envelope? | `phone/spec/device.yaml`, `phone/spec/bus.md`, `phone/docs/adr/001-compute-module.md`, `002-bc-bus.md` | pending |
+| P2 | System architecture | What are the bays, the bus, the rails, the envelope? | `phone/spec/device.yaml`, `phone/spec/bus.md`, `phone/docs/adr/001-compute-module.md`, `002-bc-bus.md` | gated |
 | P3 | Module specifications & tools | What is each module, exactly, and does it fit, power and cost out? | `phone/spec/modules/*.yaml`, `phone/tools/{validate_spec,fit_check,power_budget,bom_rollup,repairability,report}.py`, `phone/tests/` | pending |
 | P4 | Mechanical design | What does the frame look like, and can the modules be assembled and removed with one tool? | `phone/hardware/cad/*.py`, STEP/STL in `phone/build/`, exploded SVG, `phone/hardware/fasteners-and-tolerances.md` | pending |
 | P5 | Electrical architecture | How does power and data reach every module, and where are the antennas? | `phone/hardware/electrical/{power-tree,block-diagram,bus-pinout,antenna-keepouts}.md` | pending |

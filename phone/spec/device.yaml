@@ -1,0 +1,175 @@
+# BC-1 master spec: envelope, bays, bus lane allocation, rails, ceilings.
+# Unit U3. Parsed by phone/tools/specload.py once U4 exists; hand-verified until then.
+# Flat maps and lists only, no anchors/aliases (state.md: keep it small enough for the U4
+# stdlib loader). Every figure not yet confirmed by a script or a datasheet carries a `flag`.
+
+schema_version: 1
+
+device:
+  name: BC-1
+  status: architecture-stage
+  source: [PRD-001, PRD-002, PRD-004]
+
+envelope:
+  length_mm: 152.4
+  width_mm: 73.2
+  thickness_mm: 11.8
+  volume_mm3: 131637.0
+  mass_ceiling_g: 215
+  source: PRD-004
+  flag: "PRD-004 targets thickness <=10mm as an unvalidated TARGET. Actual raised to 11.8mm for bay clearances and the BC-Bus connector stack. Logged as D-014 for Rae to veto; see phone/docs/adr/001-compute-module.md."
+
+structure:
+  description: "Frame walls, ribs, back-cover shell, fasteners, and the BC-Bus backbone board that every bay connector mounts to. Not a bay: MOD-001, MECH-001."
+  volume_budget_mm3: 15796.4
+  volume_budget_fraction_of_envelope: 0.12
+  flag: "UNVERIFIED assumption, not yet confirmed by CAD. Typical unibody-smartphone frame+cover fraction is a placeholder; replace with the real figure once phone/hardware/cad/frame.py (U7) generates the frame."
+
+bays:
+  - id: display
+    module_class: display
+    length_mm: 148.6
+    width_mm: 70.2
+    height_mm: 2.6
+    volume_mm3: 27122.5
+    clearance_mm: 0.3
+    zone: "front face, full internal footprint"
+    connector: "BC-Bus board-to-board, bottom edge"
+    lanes: ["DSI:4"]
+    rails: ["3V3", "1V8"]
+    source: [DISP-001, DISP-002, BUS-002]
+
+  - id: battery
+    module_class: battery
+    length_mm: 68.0
+    width_mm: 68.0
+    height_mm: 6.0
+    volume_mm3: 27744.0
+    clearance_mm: 0.3
+    zone: "lower-center, behind display"
+    connector: "BC-Bus power-only contacts, slide latch, tool-less"
+    lanes: []
+    rails: ["VBAT"]
+    source: [PWR-001, MOD-004, BUS-004, DP-06]
+    flag: "UNVERIFIED. Footprint is a placeholder sized for a ~4000-4200mAh hard-shell pouch cell at typical energy density; DP-06 closes when a cell vendor's datasheet confirms the footprint."
+
+  - id: compute
+    module_class: compute
+    length_mm: 42.0
+    width_mm: 30.0
+    height_mm: 3.4
+    volume_mm3: 4284.0
+    clearance_mm: 0.3
+    zone: "upper-center, behind display, adjacent to camera-rear"
+    connector: "BC-Bus host connector: carries every lane group and every rail"
+    lanes: ["DSI:4", "CSI:2", "USB3/PCIe:2", "I2C:1", "GPIO:1"]
+    rails: ["VBAT", "3V3", "1V8"]
+    source: [MOD-003, BUS-001, DP-04]
+
+  - id: camera-rear
+    module_class: camera-rear
+    length_mm: 22.0
+    width_mm: 22.0
+    height_mm: 6.5
+    volume_mm3: 3146.0
+    clearance_mm: 0.3
+    zone: "top, rear face"
+    connector: "BC-Bus board-to-board"
+    lanes: ["CSI:1"]
+    rails: ["3V3", "1V8"]
+    source: [CAM-001]
+    flag: "One CSI lane covers the v1 main sensor only; CAM-001's optional second sensor needs a bus revision proposal (principles.md #2), not a second lane reserved speculatively."
+
+  - id: sensor-front
+    module_class: sensor-front
+    length_mm: 10.0
+    width_mm: 10.0
+    height_mm: 4.0
+    volume_mm3: 400.0
+    clearance_mm: 0.3
+    zone: "top, front face, outside the display active area"
+    connector: "BC-Bus board-to-board"
+    lanes: ["CSI:1"]
+    rails: ["3V3"]
+    source: [CAM-002]
+
+  - id: port
+    module_class: port
+    length_mm: 20.0
+    width_mm: 10.0
+    height_mm: 6.0
+    volume_mm3: 1200.0
+    clearance_mm: 0.3
+    zone: "bottom edge"
+    connector: "BC-Bus board-to-board; the USB-C shell mounts to the frame, not to the bay board"
+    lanes: ["USB3:1"]
+    rails: ["VBUS", "3V3"]
+    source: [MOD-002, PWR-003, BUS-002]
+
+  - id: radio
+    module_class: radio
+    length_mm: 45.0
+    width_mm: 15.0
+    height_mm: 4.5
+    volume_mm3: 3037.5
+    clearance_mm: 0.3
+    zone: "top edge, spanning width, near the antenna windows"
+    connector: "BC-Bus board-to-board"
+    lanes: ["USB3/PCIe:1"]
+    rails: ["VBAT", "3V3"]
+    source: [RADIO-001, RADIO-002]
+    flag: "Antenna feed routing and keep-out volume are P5 (phone/hardware/electrical/antenna-keepouts.md, U8); not counted in this bay's volume."
+
+totals:
+  bay_volume_mm3: 66934.0
+  structure_volume_mm3: 15796.4
+  used_volume_mm3: 82730.4
+  envelope_volume_mm3: 131637.0
+  margin_mm3: 48906.6
+  margin_fraction: 0.3715
+  gate: "design-path.md P2 gate rule: bay volumes plus structure fit the envelope with margin. 37.2% is unallocated on purpose, reserved for the BC-Bus backbone board, antenna keep-outs (P5/U8) and the thermal solution (P7); it should shrink, not grow, once U7 CAD runs the real geometry."
+
+bus:
+  standard: "phone/spec/bus.md"
+  connector_family: "0.35mm-pitch board-to-board, two-vendor catalogue part (DP-03, D-003)"
+  pin_groups: ["power", "identity-i2c", "control-gpio", "high-speed-lanes"]
+  lane_groups:
+    - id: DSI
+      protocol: "MIPI DSI"
+      consumers: [display]
+    - id: CSI
+      protocol: "MIPI CSI"
+      consumers: [camera-rear, sensor-front]
+    - id: "USB3/PCIe"
+      protocol: "USB 3.x or PCIe; each module declares which in its descriptor"
+      consumers: [port, radio]
+  source: [BUS-001, BUS-002]
+
+rails:
+  - id: VBAT
+    description: "Raw battery rail, unregulated, direct from the battery bay"
+    consumers: [compute, battery, radio]
+    source: BUS-001
+    flag: "Nominal voltage and regulation topology are P5: phone/hardware/electrical/power-tree.md."
+  - id: 3V3
+    description: "Regulated 3.3V logic/peripheral rail"
+    consumers: [display, compute, camera-rear, sensor-front, port, radio]
+    source: BUS-001
+    flag: "Per-rail budget is P5."
+  - id: 1V8
+    description: "Regulated 1.8V core/IO rail"
+    consumers: [display, compute, camera-rear]
+    source: BUS-001
+    flag: "Per-rail budget is P5."
+  - id: VBUS
+    description: "USB-C PD input, charging path into the battery bay"
+    consumers: [port]
+    source: PWR-003
+
+ceilings:
+  bom_usd: 260
+  retail_usd: 549
+  mass_g: 215
+  thickness_mm: 11.8
+  source: [PRD-003, PRD-004]
+  flag: "BOM ceiling is not yet checked against any module cost estimate; that is U6/U13 (bom_rollup.py, P10)."

@@ -6,7 +6,7 @@ and a working default so no phase idles. Closed ones become rows in `project/dec
 | DP | Decision | Working default | Closes when | Phase |
 |---|---|---|---|---|
 | DP-01 | Price band and BOM ceiling | USD 260 BOM / 549 retail (Q2) | Rae answers Q2 or 2026-10-15 passes | P1 |
-| DP-02 | Module class list v1 | The eight classes in MOD-002 | P2 bay map fits the envelope with margin | P2 |
+| DP-02 | Module class list v1 | The eight classes in MOD-002 | **Closed 2026-09-22** — D-015, `phone/spec/device.yaml` totals block (37.2% margin) | P2 |
 | DP-03 | BC-Bus connector family and pin groups | 0.35 mm-pitch board-to-board, two-vendor catalogue part; exact family chosen in P8 | Two vendors' datasheets confirm cycle rating and lane count [UNVERIFIED until then] | P2/P8 |
 | DP-04 | SoC for the v1 compute module | Qualcomm QCM6490-class (D-008) | P8 research confirms upstream driver state and availability window | P8 |
 | DP-05 | Display technology | OLED 6.1" 1080p 90 Hz | Cost from P10 vs ceiling; supplier availability | P3/P10 |

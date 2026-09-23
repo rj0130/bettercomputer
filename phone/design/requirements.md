@@ -12,28 +12,28 @@ to validate, not a fact. Status: `pending` → `planned (Pn)` → `specified` �
 | PRD-001 | BC-1 is a general-purpose smartphone: calls, data, camera, apps; not a niche device | [VISION] | P1 | pending |
 | PRD-002 | Ten-year design life for the chassis; every other part replaceable within it | [PRINCIPLE 3] [JTBD-1..3] | P2 | pending |
 | PRD-003 | BOM ceiling USD 260, retail target USD 549 (default of Q2) | [PROPOSED] [TARGET] | P10 | pending |
-| PRD-004 | Envelope target ≤ 152 × 73 × 10 mm, mass ≤ 215 g | [PROPOSED] [TARGET] | P2 | pending |
+| PRD-004 | Envelope target ≤ 152 × 73 × 10 mm, mass ≤ 215 g | [PROPOSED] [TARGET] | P2 | specified (thickness raised to 11.8mm, D-014) |
 | PRD-005 | Ingress target IP54 baseline; IP55+ tracked as decision DP-09 | [PRINCIPLE 7] | P4/P9 | pending |
 
 ## MOD — Modularity
 
 | ID | Requirement | Source | Phase | Status |
 |---|---|---|---|---|
-| MOD-001 | The phone is a frame plus named bays; each bay accepts exactly one module class | [PRINCIPLE 1] | P2 | pending |
-| MOD-002 | Module classes v1: compute, display, battery, rear camera, front sensor, port (USB-C + speaker), radio front-end, chassis frame | [PROPOSED] | P2 | pending |
+| MOD-001 | The phone is a frame plus named bays; each bay accepts exactly one module class | [PRINCIPLE 1] | P2 | specified |
+| MOD-002 | Module classes v1: compute, display, battery, rear camera, front sensor, port (USB-C + speaker), radio front-end, chassis frame | [PROPOSED] | P2 | specified (D-015) |
 | MOD-003 | Compute module (SoC + RAM + storage) is removable and upgradable without changing any other module | [JTBD-3] | P2 | pending |
 | MOD-004 | Battery removable without tools in under 60 s; every other module with one Torx T5 in under 10 min | [JTBD-1,2] [TARGET] | P4 | pending |
 | MOD-005 | Removing any module disturbs no other module (no removal-order dependencies except the back cover) | [PRINCIPLE 1] | P4 | pending |
 | MOD-006 | Zero adhesive except display cover-glass lamination | [PRINCIPLE 1] | P4 | pending |
 | MOD-007 | Every module carries an identity descriptor readable without power to the compute module (I2C EEPROM on the bus) | [JTBD-4] | P5/P6 | pending |
-| MOD-008 | Bay classes are versioned; a v1 module fits every v1 bay of its class in any BC-1 frame revision | [JTBD-6] | P2 | pending |
+| MOD-008 | Bay classes are versioned; a v1 module fits every v1 bay of its class in any BC-1 frame revision | [JTBD-6] | P2 | specified |
 
 ## BUS — The BC-Bus
 
 | ID | Requirement | Source | Phase | Status |
 |---|---|---|---|---|
-| BUS-001 | One board-to-board connector family for all modules; pin groups: power (VBAT, 3V3, 1V8), identity I2C, control GPIO, one or more high-speed lane groups | [PRINCIPLE 2] | P2 | pending |
-| BUS-002 | High-speed lanes carry MIPI DSI (display), MIPI CSI (cameras), USB 3.x / PCIe (port, radio); allocation per bay is fixed in `device.yaml` | [PROPOSED] | P2/P5 | pending |
+| BUS-001 | One board-to-board connector family for all modules; pin groups: power (VBAT, 3V3, 1V8), identity I2C, control GPIO, one or more high-speed lane groups | [PRINCIPLE 2] | P2 | specified |
+| BUS-002 | High-speed lanes carry MIPI DSI (display), MIPI CSI (cameras), USB 3.x / PCIe (port, radio); allocation per bay is fixed in `device.yaml` | [PROPOSED] | P2/P5 | specified (P2 half; rail budgets remain P5) |
 | BUS-003 | Power negotiation: a module declares its rail draw in its descriptor; the OS enforces a per-bay budget | [PROPOSED] | P5/P6 | pending |
 | BUS-004 | Rated for ≥ 500 mating cycles (repair) on every bay; battery contacts ≥ 5,000 | [TARGET] | P3/P9 | pending |
 | BUS-005 | The connector is a catalogue part from at least two vendors, never custom | [PRINCIPLE 2] | P8 | pending |

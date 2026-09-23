@@ -8,8 +8,8 @@ and the mirror table in `state.md` when a unit closes. Phases refer to `roadmap.
 |---|---|---|---|---|---|
 | U1 | P1 | `CLAUDE.md`, `project/`, `.gitignore`, `phone/tools/check.py` | checker passes | — | done |
 | U2 | P1 | `roadmap.md`, `design-path.md`, `phone/README.md`, `principles.md`, `personas-and-jobs.md`, `requirements.md`, `decision-points.md`, `risk-register.md`, this file | every REQ has a source tag and a phase; every DP has a closing condition | U1 | done |
-| U3 | P2 | `phone/spec/device.yaml` (envelope, bays with dims and clearances, bus lane allocation per bay, rails, ceilings), `phone/spec/bus.md`, `phone/docs/adr/001-compute-module.md`, `002-bc-bus.md` | `validate_spec.py` (U4) parses it; bay volumes + structure ≤ envelope | U2 | next |
-| U4 | P3 | `phone/tools/specload.py` (stdlib YAML subset loader), `validate_spec.py`, `fit_check.py`, `phone/tests/test_tools.py` | tests pass; fit check reports every bay | U3 | pending |
+| U3 | P2 | `phone/spec/device.yaml` (envelope, bays with dims and clearances, bus lane allocation per bay, rails, ceilings), `phone/spec/bus.md`, `phone/docs/adr/001-compute-module.md`, `phone/docs/adr/002-bc-bus.md` | `validate_spec.py` (U4) parses it; bay volumes + structure ≤ envelope | U2 | done |
+| U4 | P3 | `phone/tools/specload.py` (stdlib YAML subset loader), `validate_spec.py`, `fit_check.py`, `phone/tests/test_tools.py` | tests pass; fit check reports every bay | U3 | next |
 | U5 | P3 | `phone/spec/modules/{compute,display,battery,camera-rear,sensor-front,port,radio,frame}.yaml` | validate + fit pass for all eight | U4 | pending |
 | U6 | P3 | `power_budget.py` (scenarios: idle, screen-on, video, 5G data), `bom_rollup.py`, `repairability.py`, `report.py` → `phone/build/*.md` | reports generate with zero failures; BOM vs ceiling stated | U5 | pending |
 | U7 | P4 | `phone/hardware/cad/frame.py` (CadQuery from `device.yaml`), `modules.py` dummies, `exploded.py` SVG, `gen_cad.py` driver → `phone/build/*.step,*.stl,*.svg`; `phone/hardware/fasteners-and-tolerances.md` | STEP exports; no bay collision; assembly order listed | U5 | pending |
