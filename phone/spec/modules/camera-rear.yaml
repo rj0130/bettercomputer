@@ -1,0 +1,55 @@
+# BC-1 module spec: camera-rear. Unit U5.
+# Footprint, lanes and rails mirror the `camera-rear` bay in phone/spec/device.yaml exactly;
+# phone/tools/validate_modules.py cross-checks that they do not drift apart.
+
+schema_version: 1
+
+module:
+  id: camera-rear
+  bay_id: camera-rear
+  name: "Rear camera module"
+  description: "One main sensor, >=48MP class, OIS optional; a second sensor is a variant, not a v1 requirement (CAM-001)."
+  status: architecture-stage
+  source: [MOD-002, CAM-001]
+
+footprint:
+  length_mm: 22.0
+  width_mm: 22.0
+  height_mm: 6.5
+  volume_mm3: 3146.0
+  mass_budget_g: 6
+  flag: "mass_budget_g is [UNVERIFIED]: no sensor vendor is chosen yet; order-of-magnitude for a >=48MP module with optional OIS."
+
+lanes: ["CSI:1"]
+
+power:
+  - rail_id: 3V3
+    direction: load
+    typical_ma: 200
+    max_ma: 600
+    source: [CAM-001]
+    flag: "[UNVERIFIED]. Order-of-magnitude for a >=48MP sensor with OIS at capture; replace once a sensor vendor is chosen."
+  - rail_id: 1V8
+    direction: load
+    typical_ma: 50
+    max_ma: 120
+    source: [CAM-001]
+    flag: "[UNVERIFIED], same basis as the 3V3 row."
+
+removal:
+  tool: "Torx T5"
+  time_target_s: 600
+  order_dependency: "none, other than the back cover (MOD-005)"
+  source: [MOD-004, MOD-005, D-004]
+
+repairability:
+  fasteners: 2
+  adhesive: false
+  source: [MOD-005, MOD-006]
+  flag: "fastener count is [UNVERIFIED] pending U7 CAD."
+
+descriptor:
+  medium: "identity-i2c EEPROM, readable without powering the compute module"
+  fields: [vendor, part_number, hw_revision, serial_number]
+  source: [MOD-007]
+  flag: "CAM-001's optional second sensor is out of scope for this descriptor until it ships; adding it is a bus revision proposal (phone/spec/bus.md), not a silent field addition here."

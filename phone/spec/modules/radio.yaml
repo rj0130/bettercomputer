@@ -1,0 +1,55 @@
+# BC-1 module spec: radio. Unit U5.
+# Footprint, lanes and rails mirror the `radio` bay in phone/spec/device.yaml exactly;
+# phone/tools/validate_modules.py cross-checks that they do not drift apart.
+
+schema_version: 1
+
+module:
+  id: radio
+  bay_id: radio
+  name: "Radio front-end module"
+  description: "5G sub-6 + LTE, Wi-Fi 6, BT 5.x, GNSS, NFC; band set per region SKU (RADIO-001)."
+  status: architecture-stage
+  source: [MOD-002, RADIO-001, DP-07]
+
+footprint:
+  length_mm: 45.0
+  width_mm: 15.0
+  height_mm: 4.5
+  volume_mm3: 3037.5
+  mass_budget_g: 8
+  flag: "mass_budget_g is [UNVERIFIED]: no radio chipset is chosen yet."
+
+lanes: ["USB3/PCIe:1"]
+
+power:
+  - rail_id: VBAT
+    direction: load
+    typical_ma: 300
+    max_ma: 1500
+    source: [RADIO-001]
+    flag: "[UNVERIFIED]. Order-of-magnitude for a 5G sub-6 modem at typical/peak TX burst; replace once a chipset is chosen (DP-04 is compute's SoC, a separate call for the radio front-end)."
+  - rail_id: 3V3
+    direction: load
+    typical_ma: 100
+    max_ma: 300
+    source: [RADIO-001]
+    flag: "[UNVERIFIED], same basis as the VBAT row."
+
+removal:
+  tool: "Torx T5"
+  time_target_s: 600
+  order_dependency: "the RF coax pigtail to the frame's antenna windows must be detached first (RADIO-002); not yet counted against MOD-005's no-removal-order-dependency claim, flagged here for P4/P5 (U8) to resolve"
+  source: [MOD-004, MOD-005, RADIO-002]
+
+repairability:
+  fasteners: 2
+  adhesive: false
+  source: [MOD-005, MOD-006]
+  flag: "fastener count is [UNVERIFIED] pending U7 CAD; the RF coax pigtail connector (see removal.order_dependency) is a separate disconnect step, not a fastener."
+
+descriptor:
+  medium: "identity-i2c EEPROM, readable without powering the compute module"
+  fields: [vendor, part_number, hw_revision, serial_number, region_sku]
+  source: [MOD-007]
+  flag: "region_sku as a descriptor field is [UNVERIFIED]: how band-set-per-region interacts with SEC-003 (no per-device part pairing) is a P6 call, not decided here."

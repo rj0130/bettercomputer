@@ -1,0 +1,54 @@
+# BC-1 module spec: display. Unit U5.
+# Footprint, lanes and rails mirror the `display` bay in phone/spec/device.yaml exactly;
+# phone/tools/validate_modules.py cross-checks that they do not drift apart.
+
+schema_version: 1
+
+module:
+  id: display
+  bay_id: display
+  name: "Display module"
+  description: "Panel, touch digitizer and cover glass, replaced as one laminated part over MIPI DSI."
+  status: architecture-stage
+  source: [MOD-002, DISP-001, DISP-002, DP-05]
+
+footprint:
+  length_mm: 148.6
+  width_mm: 70.2
+  height_mm: 2.6
+  volume_mm3: 27122.5
+  mass_budget_g: 28
+  flag: "mass_budget_g is [UNVERIFIED]: no panel vendor is chosen yet (DP-05, phone/docs/research/04-display-modules.md, U11)."
+
+lanes: ["DSI:4"]
+
+power:
+  - rail_id: 3V3
+    direction: load
+    typical_ma: 150
+    max_ma: 400
+    source: [DP-05]
+    flag: "[UNVERIFIED]. Order-of-magnitude for a 6.1in 1080p OLED (DP-05) at typical/peak brightness; replace once U10/U11 exist."
+  - rail_id: 1V8
+    direction: load
+    typical_ma: 80
+    max_ma: 150
+    source: [DP-05]
+    flag: "[UNVERIFIED], same basis as the 3V3 row."
+
+removal:
+  tool: "Torx T5"
+  time_target_s: 600
+  order_dependency: "none, other than the back cover (MOD-005)"
+  source: [MOD-004, MOD-005, D-004]
+
+repairability:
+  fasteners: 4
+  adhesive: false
+  source: [MOD-005, MOD-006]
+  flag: "The module's own cover-glass-to-panel lamination is the one adhesive MOD-006 keeps; it is internal to this module, not part of the module-to-frame attachment, so the module itself still fasteners-only against the frame. Fastener count is [UNVERIFIED] pending U7 CAD."
+
+descriptor:
+  medium: "identity-i2c EEPROM, readable without powering the compute module"
+  fields: [vendor, part_number, hw_revision, serial_number]
+  source: [MOD-007, DISP-002]

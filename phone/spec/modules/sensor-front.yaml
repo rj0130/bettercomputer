@@ -1,0 +1,48 @@
+# BC-1 module spec: sensor-front. Unit U5.
+# Footprint, lanes and rails mirror the `sensor-front` bay in phone/spec/device.yaml exactly;
+# phone/tools/validate_modules.py cross-checks that they do not drift apart.
+
+schema_version: 1
+
+module:
+  id: sensor-front
+  bay_id: sensor-front
+  name: "Front sensor module"
+  description: "Front camera plus ambient/proximity sensing, separate from the display so a screen swap needs no camera calibration (CAM-002)."
+  status: architecture-stage
+  source: [MOD-002, CAM-002]
+
+footprint:
+  length_mm: 10.0
+  width_mm: 10.0
+  height_mm: 4.0
+  volume_mm3: 400.0
+  mass_budget_g: 1
+  flag: "mass_budget_g is [UNVERIFIED]: no sensor vendor is chosen yet."
+
+lanes: ["CSI:1"]
+
+power:
+  - rail_id: 3V3
+    direction: load
+    typical_ma: 15
+    max_ma: 40
+    source: [CAM-002]
+    flag: "[UNVERIFIED]. Order-of-magnitude for a small front camera plus ambient-light/proximity sensor."
+
+removal:
+  tool: "Torx T5"
+  time_target_s: 600
+  order_dependency: "none, other than the back cover (MOD-005)"
+  source: [MOD-004, MOD-005, D-004]
+
+repairability:
+  fasteners: 2
+  adhesive: false
+  source: [MOD-005, MOD-006]
+  flag: "fastener count is [UNVERIFIED] pending U7 CAD."
+
+descriptor:
+  medium: "identity-i2c EEPROM, readable without powering the compute module"
+  fields: [vendor, part_number, hw_revision, serial_number]
+  source: [MOD-007]

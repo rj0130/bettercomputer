@@ -1,0 +1,47 @@
+# BC-1 module spec: frame. Unit U5.
+# The frame is the eighth v1 module class (MOD-002) but is NOT a bay: phone/spec/device.yaml's
+# `structure` entry covers frame walls, ribs, back-cover shell, fasteners AND the BC-Bus
+# backbone board as one combined volume budget. This file describes the frame module class
+# specifically (MECH-001); phone/tools/validate_modules.py checks its footprint, if given,
+# against structure.volume_budget_mm3 as an upper bound rather than an exact bay match, since
+# the frame shares that budget with parts this file does not own.
+
+schema_version: 1
+
+module:
+  id: frame
+  bay_id: null
+  name: "Chassis frame"
+  description: "The structural and antenna-carrying part; every other module mounts to it and adds no structural load path (MECH-001). Not swapped in the field like a bay module; replacing it is a full teardown."
+  status: architecture-stage
+  source: [MOD-002, MECH-001, DP-10]
+
+footprint:
+  length_mm: null
+  width_mm: null
+  height_mm: null
+  volume_mm3: null
+  mass_budget_g: null
+  flag: "[UNVERIFIED], deliberately not estimated by hand: the frame shares device.yaml's structure.volume_budget_mm3 (15,796.4mm3, 12% of envelope) with the back-cover shell, fasteners and the BC-Bus backbone board, and phone/hardware/cad/frame.py (U7) is what actually derives the frame's own share of that budget from real geometry, not a hand guess here."
+
+lanes: []
+
+power: []
+
+removal:
+  tool: "full teardown"
+  time_target_s: null
+  order_dependency: "removed last: every bay module and the back cover must be vacated first (device.yaml structure.description); this is the one exception MOD-005 already carves out for the back cover, extended here to the frame itself"
+  source: [MOD-005, MECH-002]
+
+repairability:
+  fasteners: null
+  adhesive: false
+  source: [MOD-005, MOD-006]
+  flag: "[UNVERIFIED] pending U7 CAD; DP-10 (frame material) and DP-11 (fastener) are not yet closed."
+
+descriptor:
+  medium: "identity-i2c EEPROM"
+  fields: [vendor, part_number, hw_revision, serial_number]
+  source: [MOD-007, MOD-008]
+  flag: "[UNVERIFIED] whether the frame's own descriptor lives on the BC-Bus backbone board (part of structure, not this module) or a separate small EEPROM on the frame itself is a P5/P6 call (BUS-003, SW-003), not decided here. MOD-008's frame-revision compatibility promise is what this descriptor exists to let the OS check."

@@ -1,0 +1,63 @@
+# BC-1 module spec: compute. Unit U5.
+# Footprint, lanes and rails mirror the `compute` bay in phone/spec/device.yaml exactly;
+# phone/tools/validate_modules.py cross-checks that they do not drift apart. This file adds what
+# device.yaml does not carry: identity descriptor, per-rail power draw, removal and
+# repairability data.
+
+schema_version: 1
+
+module:
+  id: compute
+  bay_id: compute
+  name: "Compute module"
+  description: "SoC, RAM and storage on one removable carrier; the BC-Bus host, so its connector carries every lane group and every rail (ADR-001)."
+  status: architecture-stage
+  source: [MOD-002, MOD-003, MOD-008, DP-04]
+
+footprint:
+  length_mm: 42.0
+  width_mm: 30.0
+  height_mm: 3.4
+  volume_mm3: 4284.0
+  mass_budget_g: 12
+  flag: "mass_budget_g is [UNVERIFIED]: no BOM part is chosen yet (DP-04); order-of-magnitude for a small multi-layer carrier board plus SoC/RAM/storage package."
+
+lanes: ["DSI:4", "CSI:2", "USB3/PCIe:2"]
+
+power:
+  - rail_id: VBAT
+    direction: load
+    typical_ma: 400
+    max_ma: 2000
+    source: [DP-04]
+    flag: "[UNVERIFIED]. Order-of-magnitude for a QCM6490-class SoC (D-008) at typical/peak load; replace once phone/docs/research/01-soc-candidates.md (U11) and the P7 power model (phone/tools/thermal.py, U10) exist."
+  - rail_id: 3V3
+    direction: load
+    typical_ma: 80
+    max_ma: 200
+    source: [DP-04]
+    flag: "[UNVERIFIED], same basis as the VBAT row."
+  - rail_id: 1V8
+    direction: load
+    typical_ma: 150
+    max_ma: 400
+    source: [DP-04]
+    flag: "[UNVERIFIED], same basis as the VBAT row."
+
+removal:
+  tool: "Torx T5"
+  time_target_s: 600
+  order_dependency: "none, other than the back cover (MOD-005)"
+  source: [MOD-004, MOD-005, D-004]
+
+repairability:
+  fasteners: 4
+  adhesive: false
+  source: [MOD-005, MOD-006]
+  flag: "fastener count is [UNVERIFIED] pending phone/hardware/cad (U7); 4 is a placeholder consistent with a small carrier board."
+
+descriptor:
+  medium: "identity-i2c EEPROM, readable without powering the compute module itself"
+  fields: [vendor, part_number, hw_revision, serial_number]
+  source: [MOD-007]
+  flag: "The compute module is electrically the bus host but still carries its own descriptor like every other module (ADR-001); the signing scheme is DP-12, not decided here."

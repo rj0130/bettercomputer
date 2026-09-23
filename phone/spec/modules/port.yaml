@@ -1,0 +1,53 @@
+# BC-1 module spec: port. Unit U5.
+# Footprint, lanes and rails mirror the `port` bay in phone/spec/device.yaml exactly;
+# phone/tools/validate_modules.py cross-checks that they do not drift apart.
+
+schema_version: 1
+
+module:
+  id: port
+  bay_id: port
+  name: "Port module"
+  description: "USB-C PD input plus speaker (MOD-002); the USB-C shell mounts to the frame, not to this bay's board, so it survives a port-board swap."
+  status: architecture-stage
+  source: [MOD-002, PWR-003]
+
+footprint:
+  length_mm: 20.0
+  width_mm: 10.0
+  height_mm: 6.0
+  volume_mm3: 1200.0
+  mass_budget_g: 4
+  flag: "mass_budget_g is [UNVERIFIED]: no connector or speaker part is chosen yet."
+
+lanes: ["USB3/PCIe:1"]
+
+power:
+  - rail_id: VBUS
+    direction: passthrough
+    max_ma: 3000
+    source: [PWR-003]
+    flag: "[UNVERIFIED]. PWR-003 targets >=20W USB-C PD in; exact negotiated voltage/current is a P5 (phone/hardware/electrical/power-tree.md, U8) call, not this module's descriptor."
+  - rail_id: 3V3
+    direction: load
+    typical_ma: 20
+    max_ma: 250
+    source: [MOD-002]
+    flag: "[UNVERIFIED]. Port controller idle draw plus a burst allowance for the speaker amplifier at volume; no speaker part chosen yet."
+
+removal:
+  tool: "Torx T5"
+  time_target_s: 600
+  order_dependency: "none for this bay's board, other than the back cover (MOD-005); the USB-C shell itself is frame-mounted and is not removed with this module"
+  source: [MOD-004, MOD-005, D-004]
+
+repairability:
+  fasteners: 2
+  adhesive: false
+  source: [MOD-005, MOD-006]
+  flag: "fastener count is [UNVERIFIED] pending U7 CAD; covers this bay's board only, not the frame-mounted USB-C shell."
+
+descriptor:
+  medium: "identity-i2c EEPROM, readable without powering the compute module"
+  fields: [vendor, part_number, hw_revision, serial_number]
+  source: [MOD-007]

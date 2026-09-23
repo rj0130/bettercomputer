@@ -1,0 +1,49 @@
+# BC-1 module spec: battery. Unit U5.
+# Footprint and rails mirror the `battery` bay in phone/spec/device.yaml exactly;
+# phone/tools/validate_modules.py cross-checks that they do not drift apart.
+
+schema_version: 1
+
+module:
+  id: battery
+  bay_id: battery
+  name: "Battery module"
+  description: "Hard-shell pouch pack, power-only BC-Bus contacts, tool-less slide latch."
+  status: architecture-stage
+  source: [MOD-002, MOD-004, PWR-001, DP-06]
+
+footprint:
+  length_mm: 68.0
+  width_mm: 68.0
+  height_mm: 6.0
+  volume_mm3: 27744.0
+  mass_budget_g: 55
+  flag: "footprint and mass_budget_g are [UNVERIFIED]: placeholder for a ~4,000-4,200mAh hard-shell pouch cell at typical energy density; DP-06 closes when a cell vendor's datasheet confirms the footprint."
+
+lanes: []
+
+power:
+  - rail_id: VBAT
+    direction: source
+    capacity_mah: 4000
+    voltage_nominal_v: 3.85
+    source: [PWR-001, PWR-002, DP-06]
+    flag: "[UNVERIFIED] pending DP-06. Cycle-life target (>=80% capacity after 800 cycles, PWR-002, EU 2023/1670) is not yet measured against any specific cell."
+
+removal:
+  tool: "none"
+  time_target_s: 60
+  order_dependency: "none, other than the back cover (MOD-005)"
+  source: [MOD-004]
+
+repairability:
+  fasteners: 0
+  adhesive: false
+  source: [MOD-005, MOD-006]
+  flag: "Retention is a slide latch (BUS-004), not a fastener or adhesive; MOD-004's <60s tool-less target for the battery is stricter than the <=10min/Torx-T5 target every other module gets."
+
+descriptor:
+  medium: "identity-i2c EEPROM, readable without powering the compute module"
+  fields: [vendor, part_number, hw_revision, serial_number, manufacture_date, cycle_count]
+  source: [MOD-007]
+  flag: "cycle_count as a descriptor field is [UNVERIFIED]: whether the cell itself or a small fuel-gauge IC on the pack tracks it is a P5/P6 call (phone/hardware/electrical, U8), not decided here."
